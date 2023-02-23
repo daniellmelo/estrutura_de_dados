@@ -14,6 +14,17 @@ class LinkedList:
         """
         return self._size
 
+    def __repr__(self):
+        string = ''
+        pointer = self.head
+        while pointer:
+            string += str(pointer.data) + '->'
+            pointer = pointer.next
+        return string
+
+    def __str__(self):
+        return self.__repr__()
+
     def __getitem__(self, index: int):
         """
         Permite obter um elemento apartir do seu index
@@ -23,7 +34,7 @@ class LinkedList:
         pointer = self._getnode(index)
         if pointer:
             return pointer.data
-        raise IndexError('lista index out of range')
+        raise IndexError('list index out of range')
 
     def __setitem__(self, index: int, value):
         """
@@ -36,7 +47,7 @@ class LinkedList:
         if pointer:
             pointer.data = value
         else:
-            raise IndexError('lista index out of range')
+            raise IndexError('list index out of range')
 
     def _getnode(self, index):
         """
@@ -49,7 +60,7 @@ class LinkedList:
             if pointer:
                 pointer = pointer.next
             else:
-                raise IndexError('lista index out of range')
+                raise IndexError('list index out of range')
         return pointer
 
     def append(self, elem):
@@ -96,21 +107,51 @@ class LinkedList:
             pointer = self._getnode(index - 1)
             node.next = pointer.next
             pointer.next = node
+        self._size += 1
 
-    def remove(self, index):
-        pointer = self.head
-        for i in range(index -1):
-            pointer = pointer.next
+    def remove(self, elem):
+        """
+        Remove a primeira ocorrência de um elemento apartir do seu valor
+        :param elem: Elemento que desejamos
+        :return: True caso o elemento tenha sido removido
+        """
+        if not self.head:
+            raise ValueError(f"{elem} is not in list")
+        elif self.head.data == elem:
+            self.head = self.head.next
+            self._size -= 1
+            return True
+        else:
+            pointer = self.head.next
+            previous = self.head
+            while pointer:
+                if pointer.data == elem:
+                    previous.next = pointer.next
+                    pointer.next = None
+                    self._size -= 1
+                    return True
+                previous = pointer
+                pointer = pointer.next
 
+        raise ValueError(f"{elem} is not in list")
 
-if __name__ == '__main__':
-    lista = LinkedList()
-    lista.append(33)
-    lista.append(66)
-    lista.append(99)
-    lista.append(88)
-    lista.append(22)
-    lista.insert(6, 1000)
+    def delete(self, index):
 
-    for i in lista:
-        print(i)
+        """
+        Remove um elemento pelo index
+        :param index: Index do elemento que desejamos remover
+        :return: Retorna IndexError caso não haja um elemento no index dado
+        """
+        if index == 0:
+            self.head = self.head.next
+        else:
+            previous_pointer = self._getnode(index-1)
+            pointer = self._getnode(index+1)
+            previous_pointer.next = pointer
+        self._size -= 1
+
+    def clear(self):
+        """Esvazia a lista"""
+        pointer = self._getnode(self._size-1)
+        self.head = pointer.next
+        self._size = 0
